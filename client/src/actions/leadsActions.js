@@ -82,3 +82,20 @@ export function getLeadsColumnOrders(dispatch) {
       console.error.bind(err);
     });
 }
+
+export function updateLeadsColumnOrders(columns, target) {
+  return function(dispatch) {
+    // Array of visual column indexes that were moved.
+    console.log(columns);
+    // Visual column index being a target for moved columns.
+    console.log(target);
+    axios
+      .put('/api/leadsColumnOrders', { columns, target })
+      .then(response => {
+        console.log(response);
+      })
+      .catch(err => {
+        console.error.bind(err);
+      });
+  };
+}
