@@ -89,8 +89,7 @@ export function updateLeadsColumnOrders(columns, target) {
     console.log(columns);
     // Visual column index being a target for moved columns.
     console.log(target);
-    axios
-      .put('/api/leadsColumnOrders', { columns, target })
+    axios.put('/api/leadsColumnOrders', { columns: Array.from(columns), target })
       .then(response => {
         console.log(response);
       })

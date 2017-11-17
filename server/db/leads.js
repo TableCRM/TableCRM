@@ -64,16 +64,13 @@ const getColumnOrders = (req, res) => {
 };
 
 const updateColumnOrders = (req, res) => {
-  console.log(req.body);
-  console.log(req.body.columns);
-  console.log(req.body.target);
+  const columns = req.body.columns;
+  const target = req.body.target;
   res.status(200).send();
   // db.query(
-  //   'SELECT * from leads_columns ORDER BY columnOrder ASC',
-  //   (err, rows) => {
-  //     if (err) console.log(err);
-  //     res.json(rows);
-  //   }
+  //   `INSERT INTO leads(${fields}) VALUES (${
+  //     values
+  //   }) ON DUPLICATE KEY UPDATE ${updateQuery};`
   // );
 };
 
