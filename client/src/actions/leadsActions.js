@@ -1,6 +1,11 @@
 import axios from 'axios';
 import moment from 'moment';
-import { getNewAndUpdatedRows, getRemovedIds } from '../lib/helper';
+import {
+  getNewAndUpdatedRows,
+  getRemovedIds,
+  leadsColumnsToObj,
+  getChangedColumnsObj
+} from '../lib/helper';
 
 export function getAllLeads(dispatch) {
   axios
@@ -81,4 +86,22 @@ export function getLeadsColumnOrders(dispatch) {
     .catch(err => {
       console.error.bind(err);
     });
+}
+
+export function updateLeadsColumnOrders(afterColumns) {
+  return function(dispatch) {
+    leadsColumnsToObj(this.props.leadsColumns)
+      .then(leadsColumnsObj =>
+        getChangedColumnsObj(
+          afterColumns,
+          this.props.leadsColumns,
+          leadsColumnsObj
+        )
+      )
+      .then(movedColumns => {
+        axios.put('/api/leadsColumnOrders', { movedColumns }).then(() => {
+          dispatch(getAllLeads);
+        });
+      });
+  };
 }

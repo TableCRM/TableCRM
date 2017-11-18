@@ -1,5 +1,4 @@
 import axios from 'axios';
-
 import { getNewAndUpdatedRows, getRemovedIds } from '../lib/helper';
 
 export function getAllOpportunities() {

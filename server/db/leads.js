@@ -18,7 +18,10 @@ const createAndUpdateLeads = (req, res) => {
   }
 
   for (const row of rows) {
-    if (row.createdAt) row.createdAt = moment(new Date(row.createdAt)).format('YYYY-MM-DD HH:mm:ss');
+    if (row.createdAt)
+      row.createdAt = moment(new Date(row.createdAt)).format(
+        'YYYY-MM-DD HH:mm:ss'
+      );
     const fieldsArr = lib.getFieldsArr(row);
     const fields = lib.getFields(fieldsArr);
     const values = lib.getValues(row, fieldsArr);
@@ -27,7 +30,11 @@ const createAndUpdateLeads = (req, res) => {
       db.query(`INSERT INTO leads(${fields}) VALUES (${values});`);
     } else if (req.method === 'PUT') {
       const updateQuery = lib.getUpdateQuery(fieldsArr);
-      db.query(`INSERT INTO leads(${fields}) VALUES (${values}) ON DUPLICATE KEY UPDATE ${updateQuery};`);
+      db.query(
+        `INSERT INTO leads(${fields}) VALUES (${
+          values
+        }) ON DUPLICATE KEY UPDATE ${updateQuery};`
+      );
     }
   }
 
@@ -36,22 +43,44 @@ const createAndUpdateLeads = (req, res) => {
 
 const deleteLeads = (req, res) => {
   const removedIds = req.body.removedIds;
-  db.query('DELETE FROM leads WHERE (id) IN (?)', [removedIds], (err, results) => {
-    if (err) return console.log(err);
-  });
+  db.query(
+    'DELETE FROM leads WHERE (id) IN (?)',
+    [removedIds],
+    (err, results) => {
+      if (err) return console.log(err);
+    }
+  );
   res.status(200).send();
 };
 
 const getColumnOrders = (req, res) => {
-  db.query('SELECT * from leads_columns ORDER BY columnOrder ASC', (err, rows) => {
-    if (err) console.log(err);
-    res.json(rows);
-  });
+  db.query(
+    'SELECT * from leads_columns ORDER BY columnOrder ASC',
+    (err, rows) => {
+      if (err) console.log(err);
+      res.json(rows);
+    }
+  );
+};
+
+const updateColumnOrders = (req, res) => {
+  const movedColumns = req.body.movedColumns;
+  // console.log(movedColumns);
+  for (const i of movedColumns) {
+    db.query(
+      `UPDATE leads_columns SET columnOrder = ${i.newOrder} WHERE id = ${i.id}`,
+      (err, rows) => {
+        if (err) console.log(err);
+        res.status(201).send();
+      }
+    );
+  }
 };
 
 module.exports = {
   getAllLeads,
   createAndUpdateLeads,
   deleteLeads,
-  getColumnOrders
+  getColumnOrders,
+  updateColumnOrders
 };

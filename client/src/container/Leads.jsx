@@ -10,7 +10,8 @@ import {
   getAllLeads,
   createAndUpdateLeads,
   deleteLeads,
-  getLeadsColumnOrders
+  getLeadsColumnOrders,
+  updateLeadsColumnOrders
 } from '../actions/leadsActions';
 
 class Leads extends React.Component {
@@ -39,10 +40,10 @@ class Leads extends React.Component {
                   data: this.props.leads,
                   colHeaders: this.props.leadsColumnsHeader,
                   columns: this.props.leadsColumns,
-                  // hiddenColumns: {
-                  //   columns: [0],
-                  //   indicators: false
-                  // },
+                  hiddenColumns: {
+                    columns: [0],
+                    indicators: false
+                  },
                   manualColumnMove: true,
                   rowHeaders: true,
                   stretchH: 'all',
@@ -64,10 +65,10 @@ class Leads extends React.Component {
                     this.props.dispatch(deleteLeads(index, amount).bind(this));
                   },
                   afterColumnMove: (columns, target) => {
-                    // Array of visual column indexes that were moved.
-                    console.log(columns);
-                    // Visual column index being a target for moved columns.
-                    console.log(target);
+                    const afterColumns = this.refs.hot.hotInstance.getColHeader();
+                    this.props.dispatch(
+                      updateLeadsColumnOrders(afterColumns).bind(this)
+                    );
                   }
                 }}
               />
