@@ -64,14 +64,17 @@ const getColumnOrders = (req, res) => {
 };
 
 const updateColumnOrders = (req, res) => {
-  const columns = req.body.columns;
-  const target = req.body.target;
-  res.status(200).send();
-  // db.query(
-  //   `INSERT INTO leads(${fields}) VALUES (${
-  //     values
-  //   }) ON DUPLICATE KEY UPDATE ${updateQuery};`
-  // );
+  const movedColumns = req.body.movedColumns;
+  // console.log(movedColumns);
+  for (const i of movedColumns) {
+    db.query(
+      `UPDATE leads_columns SET columnOrder = ${i.newOrder} WHERE id = ${i.id}`,
+      (err, rows) => {
+        if (err) console.log(err);
+        res.status(201).send();
+      }
+    );
+  }
 };
 
 module.exports = {

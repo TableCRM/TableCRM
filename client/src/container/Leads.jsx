@@ -40,10 +40,10 @@ class Leads extends React.Component {
                   data: this.props.leads,
                   colHeaders: this.props.leadsColumnsHeader,
                   columns: this.props.leadsColumns,
-                  // hiddenColumns: {
-                  //   columns: [0],
-                  //   indicators: false
-                  // },
+                  hiddenColumns: {
+                    columns: [0],
+                    indicators: false
+                  },
                   manualColumnMove: true,
                   rowHeaders: true,
                   stretchH: 'all',
@@ -65,8 +65,9 @@ class Leads extends React.Component {
                     this.props.dispatch(deleteLeads(index, amount).bind(this));
                   },
                   afterColumnMove: (columns, target) => {
+                    const afterColumns = this.refs.hot.hotInstance.getColHeader();
                     this.props.dispatch(
-                      updateLeadsColumnOrders(columns, target).bind(this)
+                      updateLeadsColumnOrders(afterColumns).bind(this)
                     );
                   }
                 }}

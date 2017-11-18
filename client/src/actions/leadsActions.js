@@ -83,13 +83,25 @@ export function getLeadsColumnOrders(dispatch) {
     });
 }
 
-export function updateLeadsColumnOrders(columns, target) {
+export function updateLeadsColumnOrders(afterColumns) {
   return function(dispatch) {
-    // Array of visual column indexes that were moved.
-    console.log(columns);
-    // Visual column index being a target for moved columns.
-    console.log(target);
-    axios.put('/api/leadsColumnOrders', { columns: Array.from(columns), target })
+    const movedColumns = [];
+    for (let i = 0; i < afterColumns.length; i++) {
+      if (this.props.leadsColumns[i].data !== afterColumns[i]) {
+        const tempObj = {};
+        tempObj.newOrder = i + 1;
+        const data = afterColumns[i];
+        tempObj.data = data;
+        for (const x of this.props.leadsColumns) {
+          if (x.data === afterColumns[i]) {
+            tempObj.id = x.id;
+          }
+        }
+        movedColumns.push(tempObj);
+      }
+    }
+    axios
+      .put('/api/leadsColumnOrders', { movedColumns })
       .then(response => {
         console.log(response);
       })
