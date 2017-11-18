@@ -85,21 +85,35 @@ export function getLeadsColumnOrders(dispatch) {
 
 export function updateLeadsColumnOrders(afterColumns) {
   return function(dispatch) {
-    const movedColumns = [];
-    for (let i = 0; i < afterColumns.length; i++) {
-      if (this.props.leadsColumns[i].data !== afterColumns[i]) {
-        const tempObj = {};
-        tempObj.newOrder = i + 1;
-        const data = afterColumns[i];
-        tempObj.data = data;
-        for (const x of this.props.leadsColumns) {
-          if (x.data === afterColumns[i]) {
-            tempObj.id = x.id;
-          }
-        }
-        movedColumns.push(tempObj);
+    function leadsColumnsToObj(leadsColumns) {
+      const resultObj = {};
+      for (let i = 0; i < leadsColumns.length; i++) {
+        resultObj[leadsColumns[i].data] = leadsColumns[i].id;
       }
+      return resultObj;
     }
+    const leadsColumnsObj = leadsColumnsToObj(this.props.leadsColumns);
+
+    function getChangedColumnsObj(afterColumns, leadsColumns, leadsColumnsObj) {
+      const movedColumns = [];
+      for (let i = 0; i < afterColumns.length; i++) {
+        if (leadsColumns[i].data !== afterColumns[i]) {
+          const tempObj = {};
+          const newOrder = i + 1;
+          const id = leadsColumnsObj[afterColumns[i]];
+          tempObj.newOrder = newOrder;
+          tempObj.id = id;
+          movedColumns.push(tempObj);
+        }
+      }
+      return movedColumns;
+    }
+    const movedColumns = getChangedColumnsObj(
+      afterColumns,
+      this.props.leadsColumns,
+      leadsColumnsObj
+    );
+
     axios
       .put('/api/leadsColumnOrders', { movedColumns })
       .then(response => {
