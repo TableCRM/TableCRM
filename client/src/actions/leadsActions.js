@@ -1,6 +1,6 @@
 import axios from 'axios';
 import moment from 'moment';
-import { getNewAndUpdatedRows, getRemovedIds } from '../lib/helper';
+import { getNewAndUpdatedRows, getRemovedIds, leadsColumnsToObj, getChangedColumnsObj} from '../lib/helper';
 
 export function getAllLeads(dispatch) {
   axios
@@ -85,42 +85,20 @@ export function getLeadsColumnOrders(dispatch) {
 
 export function updateLeadsColumnOrders(afterColumns) {
   return function(dispatch) {
-    function leadsColumnsToObj(leadsColumns) {
-      const resultObj = {};
-      for (let i = 0; i < leadsColumns.length; i++) {
-        resultObj[leadsColumns[i].data] = leadsColumns[i].id;
-      }
-      return resultObj;
-    }
-    const leadsColumnsObj = leadsColumnsToObj(this.props.leadsColumns);
-
-    function getChangedColumnsObj(afterColumns, leadsColumns, leadsColumnsObj) {
-      const movedColumns = [];
-      for (let i = 0; i < afterColumns.length; i++) {
-        if (leadsColumns[i].data !== afterColumns[i]) {
-          const tempObj = {};
-          const newOrder = i + 1;
-          const id = leadsColumnsObj[afterColumns[i]];
-          tempObj.newOrder = newOrder;
-          tempObj.id = id;
-          movedColumns.push(tempObj);
-        }
-      }
-      return movedColumns;
-    }
-    const movedColumns = getChangedColumnsObj(
-      afterColumns,
-      this.props.leadsColumns,
-      leadsColumnsObj
-    );
-
-    axios
-      .put('/api/leadsColumnOrders', { movedColumns })
-      .then(response => {
-        console.log(response);
+    leadsColumnsToObj(this.props.leadsColumns)
+      .then(leadsColumnsObj => {
+        return getChangedColumnsObj(afterColumns, this.props.leadsColumns, leadsColumnsObj);
       })
-      .catch(err => {
-        console.error.bind(err);
-      });
+      .then(movedColumns => {
+        axios
+        .put('/api/leadsColumnOrders', { movedColumns })
+        .then(response => {
+          console.log(response);
+        })
+        .catch(err => {
+          console.error.bind(err);
+        });
+      })
+
   };
 }

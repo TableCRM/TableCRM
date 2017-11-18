@@ -111,3 +111,29 @@ export function getRemovedIds(selectedRows) {
   return removedIds;
 }
 
+export function leadsColumnsToObj(leadsColumns) {
+  return new Promise(resolve => {
+    const resultObj = {};
+    for (let i = 0; i < leadsColumns.length; i++) {
+      resultObj[leadsColumns[i].data] = leadsColumns[i].id;
+    }
+    resolve(resultObj);
+  });
+}
+
+export function getChangedColumnsObj(afterColumns, leadsColumns, leadsColumnsObj) {
+  return new Promise(resolve => {
+    const movedColumns = [];
+    for (let i = 0; i < afterColumns.length; i++) {
+      if (leadsColumns[i].data !== afterColumns[i]) {
+        const tempObj = {};
+        const newOrder = i + 1;
+        const id = leadsColumnsObj[afterColumns[i]];
+        tempObj.newOrder = newOrder;
+        tempObj.id = id;
+        movedColumns.push(tempObj);
+      }
+    }
+    resolve(movedColumns);
+  });
+}
