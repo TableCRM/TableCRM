@@ -96,6 +96,18 @@ CREATE TABLE opportunity_contact (
   PRIMARY KEY (contactID)
 );
 
+CREATE TABLE opportunity_account (
+  accountID int,
+  opportunityID int,
+  PRIMARY KEY (accountID)
+);
+
+CREATE TABLE contact_account (
+  accountID int,
+  contactID int,
+  PRIMARY KEY (accountID)
+);
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * *
   Actual Data
 * * * * * * * * * * * * * * * * * * * * * * * * * * */

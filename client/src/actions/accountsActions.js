@@ -39,6 +39,26 @@ export function getAllAccounts(dispatch) {
     });
 }
 
+export function getAllLeads(dispatch) {
+  axios
+    .get('/api/leads')
+    .then(response => {
+      for (const row of response.data) {
+        if (row.createdAt) row.createdAt = moment(new Date(row.createdAt)).format('MM/DD/YYYY');
+      }
+      return response;
+    })
+    .then(response => {
+      dispatch({
+        type: 'GET_ALL_LEADS',
+        payload: response.data
+      });
+    })
+    .catch(err => {
+      console.error.bind(err);
+    });
+}
+
 export function createAndUpdateAccounts(changes, source) {
   return function(dispatch) {
     const getNewAndUpdatedRowsBound = getNewAndUpdatedRows.bind(this);

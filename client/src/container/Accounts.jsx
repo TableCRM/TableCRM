@@ -18,16 +18,16 @@ https://redux.js.org/docs/api/Store.html#dispatch
 */
 import 'handsontable-pro/dist/handsontable.full';
 import HotTable from 'react-handsontable';
-
-import React from 'react';
+// the react import syntax is the following way because: https://stackoverflow.com/questions/46283811/flow-errors-with-react-component
+import * as React from 'react';
 // connects the Accounts component to the redux store
 import { connect } from 'react-redux';
 
-import {
-  getAllAccounts,
-  createAndUpdateAccounts,
-  deleteAccounts
-} from '../actions/accountsActions';
+import { getAllAccounts, createAndUpdateAccounts, deleteAccounts } from '../actions/accountsActions';
+
+import { getAllOpportunityIDsNames, relateOppToAccount } from '../actions/opportunitiesActions';
+
+import { getAllContactIDsNames, relateContactToAccount } from '../actions/contactsActions';
 
 class Accounts extends React.Component {
   constructor(props) {
@@ -35,53 +35,59 @@ class Accounts extends React.Component {
     this.state = {};
   }
   componentDidMount() {
+
     this.props.dispatch(getAllAccounts);
+    this.props.dispatch(getAllOpportunityIDsNames());
+    this.props.dispatch(getAllContactIDsNames());
   }
   render() {
+    const opportunityIDsNames = this.props.opportunityIDsNames
+      ? this.props.opportunityIDsNames.map(opp => opp.name)
+      : null;
+    const contactIDsNames = this.props.contactIDsNames ? this.props.contactIDsNames.map(contact => contact.name) : null;
     return (
       <div>
         <div id="table">
-          {!this.props.accounts ? (
+          {!this.props.accounts && !this.props.opportunityIDsNames && !this.props.contactIDsNames ? (
             <p>loading...</p>
           ) : (
             <HotTable
               root="hot"
-              ref="hot"
+              ref="hot" 
               settings={{
                 licenseKey: '7fb69-d3720-89c63-24040-8e45b',
                 data: this.props.accounts,
-                dataSchema: {
-                  id: null,
-                  description: null,
-                  industryId: null,
-                  email: null,
-                  phoneNumber: null,
-                  street: null,
-                  city: null,
-                  state: null,
-                  postalCode: null,
-                  country: null,
-                  website: null,
-                  createdAt: null,
-                  updatedAt: null
-                },
                 colHeaders: [
-                  'id',
-                  'description',
-                  'industryID',
-                  'email',
-                  'phoneNumber',
-                  'street',
-                  'city',
-                  'state',
-                  'postalCode',
-                  'country',
-                  'website',
-                  'createdAt',
-                  'updatedAt'
+                  'ID',
+                  'Opportunity Name',
+                  'Contact Name',
+                  'Description',
+                  'IndustryID',
+                  'E-mail',
+                  'Phone Number',
+                  'Street',
+                  'City',
+                  'State',
+                  'Postal Code',
+                  'Country',
+                  'Website',
+                  'Created At',
+                  'Updated At'
                 ],
                 columns: [
                   { data: 'id' },
+                  {
+                    data: 'name',
+                    type: 'autocomplete',
+                    source: opportunityIDsNames,
+                    strict: false
+                  },
+                  {
+                    data: 'contactFullName',
+                    type: 'autocomplete',
+                    source: contactIDsNames,
+                    strict: false
+                  },
                   { data: 'description' },
                   { data: 'industryID', type: 'numeric' },
                   { data: 'email' },
@@ -92,28 +98,71 @@ class Accounts extends React.Component {
                   { data: 'postalCode' },
                   { data: 'country' },
                   { data: 'website' },
-                  { data: 'createdAt', type: 'date', readOnly: true },
-                  { data: 'updatedAt', type: 'date', readOnly: true }
+                  {
+                    data: 'createdAt',
+                    type: 'date',
+                    readOnly: true
+                  },
+                  {
+                    data: 'updatedAt',
+                    type: 'date',
+                    readOnly: true
+                  }
                 ],
+                hiddenColumns: {
+                  columns: [0],
+                  indicators: false
+                },
                 rowHeaders: true,
-                minSpareRows: 1,
+                minSpareRows: false,
                 stretchH: 'all',
                 contextMenu: ['remove_row'],
                 filters: true,
-                dropdownMenu: [
-                  'filter_by_condition',
-                  'filter_by_value',
-                  'filter_action_bar'
-                ],
+                dropdownMenu: ['filter_by_condition', 'filter_by_value', 'filter_action_bar'],
                 columnSorting: true,
                 afterChange: (changes, source) => {
-                  this.props.dispatch(
-                    createAndUpdateAccounts(changes, source).bind(this)
-                  );
+                  const opportunityIDsNames = this.props.opportunityIDsNames;
+                  const contactIDsNames = this.props.contactIDsNames;
+                  if (changes && changes[0][1] != 'name' && changes[0][1] != 'contactFullName') {
+                    this.props.dispatch(createAndUpdateAccounts(changes, source).bind(this));
+                  }
+                  if (changes && changes[0][1] === 'name') {
+                    const selectedOpportunityName = changes[0][3];
+                    const oppID = opportunityIDsNames
+                      .filter(({ name }) => name === selectedOpportunityName)
+                      .map(({ id }) => id)[0];
+                    if (
+                      changes[0][1] === 'name' &&
+                      selectedOpportunityName !== null &&
+                      opportunityIDsNames.find(o => o.name === selectedOpportunityName)
+                    ) {
+                      this.props.dispatch(relateOppToAccount(changes, source, oppID).bind(this));
+                    }
+                  } else if (changes) {
+                    const selectedContactName = changes[0][3];
+                    const contactID = contactIDsNames
+                      .filter(({ name }) => name === selectedContactName)
+                      .map(({ id }) => id)[0];
+                    if (
+                      changes[0][1] === 'contactFullName' &&
+                      selectedContactName !== null &&
+                      contactIDsNames.find(c => c.name === selectedContactName)
+                    ) {
+                      this.props.dispatch(relateContactToAccount(changes, source, contactID).bind(this));
+                    }
+                  }
                 },
                 beforeRemoveRow: (index, amount) => {
                   this.props.dispatch(deleteAccounts(index, amount).bind(this));
                 }
+                // beforeRenderer: () => {
+                  // this.hot ? console.log('THIS IS THIS: ', this.hot.hotInstance) : console.log('NOT DEFINED YET');
+
+                  // this.hot ? this.hot.hotInstance.updateSettings({
+                  //   minSpareRows: 1
+                  // }) : console.log('THIS not valid yet: ')
+                  // this.hot ? console.log('THIS: ', this.hot) : console.log('THIS is not valid yet');
+                // }
               }}
             />
           )}
@@ -143,7 +192,9 @@ https://github.com/reactjs/react-redux/blob/master/docs/api.md#connectmapstateto
 */
 
 const mapStateToProps = state => ({
-  accounts: state.accountsReducer.accounts
+  accounts: state.accountsReducer.accounts,
+  opportunityIDsNames: state.opportunitiesReducer.opportunityIDsNames,
+  contactIDsNames: state.contactsReducer.contactIDsNames
 });
 
 /*

@@ -97,7 +97,7 @@ class Contacts extends React.Component {
                   indicators: false
                 },
                 rowHeaders: true,
-                minSpareRows: 1,
+                minSpareRows: false,
                 stretchH: 'all',
                 contextMenu: ['remove_row'],
                 filters: true,

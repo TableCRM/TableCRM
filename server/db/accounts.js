@@ -2,17 +2,25 @@ const db = require('./config');
 const lib = require('../lib/helper');
 const moment = require('moment');
 
-
 const getAllAccounts = (req, res) => {
-  db.query('SELECT * from accounts', (err, rows) => {
-    if (!err) {
-      res.json(rows);
-    } 
-  });
+  db.query(
+    'SELECT a.*,o.name,c.firstName, c.lastName FROM accounts a LEFT JOIN opportunity_account oa ON a.id=oa.accountID LEFT JOIN opportunities o ON oa.opportunityID=o.id LEFT JOIN contact_account ca ON a.id=ca.accountID LEFT JOIN contacts c ON ca.contactID=c.id ORDER BY a.id',
+    (err, rows) => {
+      if (!err) {
+        rows.forEach(columnDataObject => {
+          if (columnDataObject.firstName !== null) {
+            columnDataObject.contactFullName = `${columnDataObject.firstName} ${columnDataObject.lastName}`;
+          }
+        });
+        res.json(rows);
+      }
+    }
+  );
 };
 
 const createAndUpdateAccounts = (req, res) => {
   let rows;
+
   if (req.method === 'POST') {
     rows = req.body.newRows;
   } else if (req.method === 'PUT') {
@@ -43,8 +51,6 @@ const deleteAccounts = (req, res) => {
     res.sendStatus(200);
   });
 };
-
-
 
 module.exports = {
   getAllAccounts,

@@ -10,6 +10,11 @@ export default function(
         ...state,
         contacts: action.payload
       };
+    case 'GET_ALL_CONTACT_IDS_NAMES':
+      return {
+        ...state,
+        contactIDsNames: action.payload.data
+      };
   }
   return state;
 }

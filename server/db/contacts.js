@@ -2,10 +2,13 @@ const db = require('./config');
 const lib = require('../lib/helper');
 
 const getAllContacts = (req, res) => {
-  db.query('SELECT c.*,o.name FROM contacts c LEFT JOIN opportunity_contact oc ON c.id=oc.contactID LEFT JOIN opportunities o ON oc.opportunityID=o.id ORDER BY c.id', (err, rows) => {
-    if (err) console.log(err);
-    res.json(rows);
-  });
+  db.query(
+    'SELECT c.*,o.name FROM contacts c LEFT JOIN opportunity_contact oc ON c.id=oc.contactID LEFT JOIN opportunities o ON oc.opportunityID=o.id ORDER BY c.id',
+    (err, rows) => {
+      if (err) console.log(err);
+      res.json(rows);
+    }
+  );
 };
 
 const createAndUpdateContacts = (req, res) => {
@@ -41,8 +44,38 @@ const deleteContacts = (req, res) => {
   });
 };
 
+const getAllContactIDsNames = (req, res) => {
+  db.query('SELECT id,firstName,lastName from contacts', (err, rows) => {
+    if (!err) {
+      const result = rows.map(contact => {
+        const id = contact.id;
+        const name = `${contact.firstName} ${contact.lastName}`;
+        return { id, name };
+      });
+      res.json(result);
+    }
+  });
+};
+
+const relateContactToAccount = (req, res) => {
+  const accountID = req.params.accountID;
+  const selectedContactID = req.params.contactID;
+  // store contact id and account id in joint table   //use on dup key update
+  db.query(
+    `INSERT INTO contact_account(accountID,contactID) VALUES (${accountID},${
+      selectedContactID
+    }) ON DUPLICATE KEY UPDATE contactID=${selectedContactID};`,
+    err => {
+      if (err) return console.log(err);
+    }
+  );
+  res.sendStatus(201);
+};
+
 module.exports = {
   getAllContacts,
   deleteContacts,
-  createAndUpdateContacts
+  createAndUpdateContacts,
+  getAllContactIDsNames,
+  relateContactToAccount
 };

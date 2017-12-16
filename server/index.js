@@ -30,23 +30,20 @@ app.post('/api/contacts', contacts.createAndUpdateContacts);
 app.put('/api/contacts', contacts.createAndUpdateContacts);
 app.delete('/api/contacts', contacts.deleteContacts);
 
+app.get('/api/contacts/names', contacts.getAllContactIDsNames);
+app.put('/api/contacts/account/:contactID/:accountID', contacts.relateContactToAccount);
+
 app.get('/api/opportunities', opportunities.getAllOpportunities);
 app.post('/api/opportunities', opportunities.createAndUpdateOpportunities);
 app.put('/api/opportunities', opportunities.createAndUpdateOpportunities);
 app.delete('/api/opportunities', opportunities.deleteOpportunities);
 
-app.get(
-  '/api/opportunities/columns',
-  opportunities.getHiddenColumnsOfOpportunities
-);
-app.put(
-  '/api/opportunities/columns',
-  opportunities.updateHiddenColumnsOfOpportunities
-);
+app.get('/api/opportunities/columns', opportunities.getHiddenColumnsOfOpportunities);
+app.put('/api/opportunities/columns', opportunities.updateHiddenColumnsOfOpportunities);
 
 app.get('/api/opportunities/names', opportunities.getAllOpportunityIDsNames);
 app.get('/api/opportunity/:oppID/:contactID', opportunities.relateOppToContact);
-
+app.get('/api/opportunity/account/:oppID/:accountID', opportunities.relateOppToAccount);
 
 app.get('/api/accounts', accounts.getAllAccounts);
 app.delete('/api/accounts', accounts.deleteAccounts);
@@ -60,14 +57,8 @@ app.delete('/api/leads', leads.deleteLeads);
 app.get('/api/leads/columns', leads.getColumnOrders);
 app.put('/api/leads/columns', leads.updateColumnOrders);
 
-app.get(
-  '/api/dashboard/totaloppvalueperstatus',
-  dashboard.getTotalOppValuePerStatus
-);
-app.get(
-  '/api/dashboard/totaloppvalueperstage',
-  dashboard.getTotalOppValuePerStage
-);
+app.get('/api/dashboard/totaloppvalueperstatus', dashboard.getTotalOppValuePerStatus);
+app.get('/api/dashboard/totaloppvalueperstage', dashboard.getTotalOppValuePerStage);
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * *
   Server
