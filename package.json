@@ -5,8 +5,7 @@
 	"scripts": {
 		"start": "server/index.js",
 		"start-dev": "DEBUG=express:* nodemon --inspect server/index.js",
-		"dev":
-			"webpack-dev-server --hot --port 8080 --host 127.0.0.1 --config webpack.dev.js",
+		"dev": "webpack-dev-server --hot --port 8080 --host 127.0.0.1 --config webpack.dev.js",
 		"build": "webpack --config webpack.prod.js",
 		"compile": "webpack -p --config webpack.dev.js",
 		"format":
