@@ -16,14 +16,6 @@ const path = require('path');
 const app = express();
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * *
-  static
-* * * * * * * * * * * * * * * * * * * * * * * * * * */
-app.use(express.static(path.join(__dirname, '/../client/dist')));
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '/../client/dist/index.html'));
-});
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * *
   Middleware
 * * * * * * * * * * * * * * * * * * * * * * * * * * */
 app.use(cors());
@@ -87,6 +79,14 @@ app.get(
   '/api/dashboard/totaloppvalueperstage',
   dashboard.getTotalOppValuePerStage
 );
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * *
+  static
+* * * * * * * * * * * * * * * * * * * * * * * * * * */
+app.use(express.static(path.join(__dirname, '../client/dist')));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+});
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * *
   Server
