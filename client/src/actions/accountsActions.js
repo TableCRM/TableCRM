@@ -69,10 +69,9 @@ export function createAndUpdateAccounts(changes, source, hotTable) {
   };
 }
 
-export function deleteAccounts(index, amount) {
+export function deleteAccounts(index, amount, hotTable) {
   return function(dispatch) {
-    const getRemovedIdsBound = getRemovedIds.bind(this);
-    const removedIds = getRemovedIdsBound();
+    const removedIds = getRemovedIds(index, amount, hotTable);
     axios({
       method: 'DELETE',
       url: '/api/accounts',

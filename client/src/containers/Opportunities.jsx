@@ -114,7 +114,8 @@ class Opportunities extends React.Component {
         }
       },
       beforeRemoveRow: (index, amount) => {
-        this.props.dispatch(deleteOpportunities(index, amount).bind(this));
+        const hotTable = this.refs.hot.hotInstance;
+        this.props.dispatch(deleteOpportunities(index, amount, hotTable));
       },
       afterColumnMove: (columns, target) => {
         this.props.dispatch(

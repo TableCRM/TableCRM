@@ -80,7 +80,8 @@ export class Accounts extends React.Component {
         }
       },
       beforeRemoveRow: (index, amount) => {
-        this.props.dispatch(deleteAccounts(index, amount).bind(this));
+        const hotTable = this.refs.hot.hotInstance;
+        this.props.dispatch(deleteAccounts(index, amount, hotTable));
       },
       afterColumnMove: (columns, target) => {
         this.props.dispatch(

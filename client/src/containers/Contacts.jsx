@@ -107,7 +107,8 @@ export class Contacts extends React.Component {
         indicators: true
       },
       beforeRemoveRow: (index, amount) => {
-        this.props.dispatch(deleteContacts(index, amount).bind(this));
+        const hotTable = this.refs.hot.hotInstance;
+        this.props.dispatch(deleteContacts(index, amount, hotTable));
       },
       afterInit: () => {
         this.props.dispatch(updateSource.bind(this));

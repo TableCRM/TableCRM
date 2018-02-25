@@ -46,17 +46,13 @@ export function createAndUpdateContacts(changes, source, hotTable) {
   };
 }
 
-export function deleteContacts(index, amount) {
+export function deleteContacts(index, amount, hotTable) {
   return function(dispatch) {
-    // get deleted row ID(s)
-    const getRemovedIdsBound = getRemovedIds.bind(this);
-    const removedIds = getRemovedIdsBound();
+    const removedIds = getRemovedIds(index, amount, hotTable);
     axios({
       method: 'DELETE',
       url: '/api/contacts',
-      data: {
-        removedIds
-      }
+      data: { removedIds }
     });
   };
 }

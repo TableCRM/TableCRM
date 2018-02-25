@@ -54,17 +54,13 @@ export function createAndUpdateLeads(changes, source, hotTable) {
   };
 }
 
-export function deleteLeads(index, amount) {
+export function deleteLeads(index, amount, hotTable) {
   return function(dispatch) {
-    const selectedRows = this.refs.hot.hotInstance.getSelected();
-    const getRemovedIdsBound = getRemovedIds.bind(this);
-    const removedIds = getRemovedIdsBound(selectedRows);
+    const removedIds = getRemovedIds(index, amount, hotTable);
     axios({
       method: 'DELETE',
       url: '/api/leads',
-      data: {
-        removedIds
-      }
+      data: { removedIds }
     });
   };
 }

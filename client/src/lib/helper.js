@@ -58,8 +58,8 @@ export function getNewAndUpdatedRows(changes, source, hotTable) {
   return { newRows, updatedRows };
 }
 
-export function getRemovedIds() {
-  const selectedRows = this.refs.hot.hotInstance.getSelected();
+export function getRemovedIds(index, amount, hotTable) {
+  const selectedRows = hotTable.getSelected();
   const startRow = selectedRows[0];
   const endRow = selectedRows[2];
   // get smallest and biggest row id's
@@ -68,7 +68,7 @@ export function getRemovedIds() {
   // get list of deleted row id's
   const removedIds = [];
   for (let i = smallestRowIndex; i <= biggestRowIndex; i++) {
-    removedIds.push(this.refs.hot.hotInstance.getDataAtRow(i)[0]);
+    removedIds.push(hotTable.getDataAtRow(i)[0]);
   }
   return removedIds;
 }

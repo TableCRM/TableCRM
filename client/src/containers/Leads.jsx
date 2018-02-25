@@ -91,7 +91,8 @@ class Leads extends React.Component {
         }
       },
       beforeRemoveRow: (index, amount) => {
-        this.props.dispatch(deleteLeads(index, amount).bind(this));
+        const hotTable = this.refs.hot.hotInstance;
+        this.props.dispatch(deleteLeads(index, amount, hotTable));
       },
       afterColumnMove: (columns, target) => {
         this.props.dispatch(
