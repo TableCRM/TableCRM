@@ -82,12 +82,11 @@ export function getColumnsOfOpportunities(dispatch) {
     });
 }
 
-export function updateHiddenColumnsOfOpportunities(context) {
+export function updateHiddenColumnsOfOpportunities(context, hotTable) {
   return function(dispatch) {
-    const getHiddenColsBound = getHiddenColsFromContext.bind(this);
-    const hiddenColumns = getHiddenColsBound(context);
-    axios
-      .put('/api/opportunities/columns/hidden', { hiddenColumns })
+    const hiddenColumns = getHiddenColsFromContext(context, hotTable);
+
+    axios.put('/api/opportunities/columns/hidden', { hiddenColumns })
       .then(() => {
         dispatch(getColumnsOfOpportunities.bind(this));
       });

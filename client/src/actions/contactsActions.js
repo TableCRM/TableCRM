@@ -120,13 +120,14 @@ export function updateColumnOrderOfContacts(columns, target) {
   };
 }
 
-export function updateHiddenColumnsOfContacts(context) {
+export function updateHiddenColumnsOfContacts(context, hotTable) {
   return function(dispatch) {
-    const getHiddenColsBound = getHiddenColsFromContext.bind(this);
-    const hiddenColumns = getHiddenColsBound(context);
-    axios.put('/api/contacts/columns/hidden', { hiddenColumns }).then(() => {
-      dispatch(getColumnsOfContacts.bind(this));
-    });
+    const hiddenColumns = getHiddenColsFromContext(context, hotTable);
+
+    axios.put('/api/contacts/columns/hidden', { hiddenColumns })
+      .then(() => {
+        dispatch(getColumnsOfContacts.bind(this));
+      });
   };
 }
 

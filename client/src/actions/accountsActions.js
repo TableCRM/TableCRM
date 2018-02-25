@@ -107,13 +107,14 @@ export function getColumnsOfAccounts(dispatch) {
     });
 }
 
-export function updateHiddenColumnsOfAccounts(context) {
+export function updateHiddenColumnsOfAccounts(context, hotTable) {
   return function(dispatch) {
-    const getHiddenColsBound = getHiddenColsFromContext.bind(this);
-    const hiddenColumns = getHiddenColsBound(context);
-    axios.put('/api/accounts/columns/hidden', { hiddenColumns }).then(() => {
-      dispatch(getColumnsOfAccounts.bind(this));
-    });
+    const hiddenColumns = getHiddenColsFromContext(context, hotTable);
+
+    axios.put('/api/accounts/columns/hidden', { hiddenColumns })
+      .then(() => {
+        dispatch(getColumnsOfAccounts.bind(this));
+      });
   };
 }
 

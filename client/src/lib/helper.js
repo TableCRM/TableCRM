@@ -157,11 +157,11 @@ export function getHiddenColsFromResponse(response) {
   return hiddenColumnsIndexes;
 }
 
-export function getHiddenColsFromContext(context) {
+export function getHiddenColsFromContext(context, hotTable) {
   const hiddenColIndices = context.hot.getPlugin('hiddenColumns').hiddenColumns;
   const hiddenColProps = [];
   for (const hiddenColIndex of hiddenColIndices) {
-    const hiddenColProp = this.refs.hot.hotInstance.colToProp(hiddenColIndex);
+    const hiddenColProp = hotTable.colToProp(hiddenColIndex);
     hiddenColProps.push(hiddenColProp);
   }
   return hiddenColProps;

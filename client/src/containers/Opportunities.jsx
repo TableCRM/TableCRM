@@ -123,9 +123,8 @@ class Opportunities extends React.Component {
         );
       },
       afterContextMenuHide: context => {
-        this.props.dispatch(
-          updateHiddenColumnsOfOpportunities(context).bind(this)
-        );
+        const hotTable = this.refs.hot.hotInstance;
+        this.props.dispatch(updateHiddenColumnsOfOpportunities(context, hotTable));
       },
       afterOnCellMouseOver: (event, coords, td) => {
         this.props.dispatch(

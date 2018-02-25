@@ -119,7 +119,8 @@ export class Contacts extends React.Component {
         );
       },
       afterContextMenuHide: context => {
-        this.props.dispatch(updateHiddenColumnsOfContacts(context).bind(this));
+        const hotTable = this.refs.hot.hotInstance;
+        this.props.dispatch(updateHiddenColumnsOfContacts(context, hotTable));
       },
       beforeCopy: (data, coords) => {
         const oppNames = this.props.opportunityIDsNames.map(opp => opp.name);

@@ -100,7 +100,8 @@ class Leads extends React.Component {
         );
       },
       afterContextMenuHide: context => {
-        this.props.dispatch(updateHiddenColumnsOfLeads(context).bind(this));
+        const hotTable = this.refs.hot.hotInstance;
+        this.props.dispatch(updateHiddenColumnsOfLeads(context, hotTable));
       },
       afterOnCellMouseOver: (event, coords, td) => {
         this.props.dispatch(

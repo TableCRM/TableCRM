@@ -118,13 +118,14 @@ export function updateColumnOrderOfLeads(columns, target) {
   };
 }
 
-export function updateHiddenColumnsOfLeads(context) {
+export function updateHiddenColumnsOfLeads(context, hotTable) {
   return function(dispatch) {
-    const getHiddenColsBound = getHiddenColsFromContext.bind(this);
-    const hiddenColumns = getHiddenColsBound(context);
-    axios.put('/api/leads/columns/hidden', { hiddenColumns }).then(() => {
-      dispatch(getColumnsOfLeads.bind(this));
-    });
+    const hiddenColumns = getHiddenColsFromContext(context, hotTable);
+
+    axios.put('/api/leads/columns/hidden', { hiddenColumns })
+      .then(() => {
+        dispatch(getColumnsOfLeads.bind(this));
+      });
   };
 }
 

@@ -89,7 +89,8 @@ export class Accounts extends React.Component {
         );
       },
       afterContextMenuHide: context => {
-        // this.props.dispatch(updateHiddenColumnsOfAccounts(context).bind(this));
+        const hotTable = this.refs.hot.hotInstance;
+        this.props.dispatch(updateHiddenColumnsOfAccounts(context, hotTable));
       },
       afterOnCellMouseOver: (event, coords, td) => {
         this.props.dispatch(
