@@ -1,64 +1,61 @@
 import moment from 'moment';
 
-export function getNewAndUpdatedRows(changes, source) {
-  // if changes array is not null
-  if (changes && source !== 'loadData') {
-    // create empty objects to track new rows and updated rows
-    const newRowsObj = {};
-    const updatedRowsObj = {};
+export function getNewAndUpdatedRows(changes, source, hotTable) {
+  // create empty objects to track new rows and updated rows
+  const newRowsObj = {};
+  const updatedRowsObj = {};
 
-    // for each change array in changes array
-    for (const change of changes) {
-      const rowIndex = change[0]; // per spreadsheet
-      const rowId = this.refs.hot.hotInstance.getDataAtRow(rowIndex)[0]; // per database
-      const field = change[1];
-      let newValue = change[3];
-      const colIndex = this.refs.hot.hotInstance.propToCol(field);
-      const cell = this.refs.hot.hotInstance.getCell(rowIndex, colIndex);
+  // for each change array in changes array
+  for (const change of changes) {
+    const rowIndex = change[0]; // per spreadsheet
+    const rowId = hotTable.getDataAtRow(rowIndex)[0]; // per database
+    const field = change[1];
+    let newValue = change[3];
+    const colIndex = hotTable.propToCol(field);
+    const cell = hotTable.getCell(rowIndex, colIndex);
 
-      // if change is of valid data type
-      if (
-        cell === null ||
-				cell === undefined ||
-				!cell.classList.value.split(' ').includes('htInvalid')
-      ) {
-        // format date for persisting in database
-        if (field === 'expectedCloseDate' || field === 'closeDate') {
-          newValue = moment(newValue).format('YYYY-MM-DD');
-        }
-        // if change's corresponding row was empty prior to change
-        if (rowId === null) {
-          // if row index is not already a key in track object
-          if (!newRowsObj[rowIndex]) {
-            // add key-value pair to track object
-            const newRow = {};
-            newRow[field] = newValue;
-            newRowsObj[rowIndex] = newRow;
-            // otherwise
-          } else {
-            // get key's value and add field-newValue pair to the value
-            const newRow = newRowsObj[rowIndex];
-            newRow[field] = newValue;
-          }
-          // otherwise, if change's corresponding row was not empty prior to change
+    // if change is of valid data type
+    if (
+      cell === null ||
+			cell === undefined ||
+			!cell.classList.value.split(' ').includes('htInvalid')
+    ) {
+      // format date for persisting in database
+      if (field === 'expectedCloseDate' || field === 'closeDate') {
+        newValue = moment(newValue).format('YYYY-MM-DD');
+      }
+      // if change's corresponding row was empty prior to change
+      if (rowId === null) {
+        // if row index is not already a key in track object
+        if (!newRowsObj[rowIndex]) {
+          // add key-value pair to track object
+          const newRow = {};
+          newRow[field] = newValue;
+          newRowsObj[rowIndex] = newRow;
+          // otherwise
         } else {
-          // similar to above
-          if (!updatedRowsObj[rowId]) {
-            const updatedRow = { id: rowId };
-            updatedRow[field] = newValue;
-            updatedRowsObj[rowId] = updatedRow;
-          } else {
-            const updatedRow = updatedRowsObj[rowId];
-            updatedRow[field] = newValue;
-          }
+          // get key's value and add field-newValue pair to the value
+          const newRow = newRowsObj[rowIndex];
+          newRow[field] = newValue;
+        }
+        // otherwise, if change's corresponding row was not empty prior to change
+      } else {
+        // similar to above
+        if (!updatedRowsObj[rowId]) {
+          const updatedRow = { id: rowId };
+          updatedRow[field] = newValue;
+          updatedRowsObj[rowId] = updatedRow;
+        } else {
+          const updatedRow = updatedRowsObj[rowId];
+          updatedRow[field] = newValue;
         }
       }
     }
-
-    const newRows = Object.values(newRowsObj);
-    const updatedRows = Object.values(updatedRowsObj);
-    return { newRows, updatedRows };
   }
+
+  const newRows = Object.values(newRowsObj);
+  const updatedRows = Object.values(updatedRowsObj);
+  return { newRows, updatedRows };
 }
 
 export function getRemovedIds() {

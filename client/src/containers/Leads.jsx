@@ -83,7 +83,12 @@ class Leads extends React.Component {
         indicators: true
       },
       afterChange: (changes, source) => {
-        this.props.dispatch(createAndUpdateLeads(changes, source).bind(this));
+        if (changes && source !== 'loadData') {
+          const hotTable = this.refs.hot.hotInstance;
+          this.props.dispatch(
+            createAndUpdateLeads(changes, source, hotTable)
+          );
+        }
       },
       beforeRemoveRow: (index, amount) => {
         this.props.dispatch(deleteLeads(index, amount).bind(this));

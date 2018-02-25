@@ -33,10 +33,9 @@ export function getAllLeads(dispatch) {
     });
 }
 
-export function createAndUpdateLeads(changes, source) {
+export function createAndUpdateLeads(changes, source, hotTable) {
   return function(dispatch) {
-    const getNewAndUpdatedRowsBound = getNewAndUpdatedRows.bind(this);
-    const newAndUpdatedRows = getNewAndUpdatedRowsBound(changes, source);
+    const newAndUpdatedRows = getNewAndUpdatedRows(changes, source, hotTable);
 
     if (newAndUpdatedRows) {
       const newRows = newAndUpdatedRows.newRows;

@@ -72,9 +72,12 @@ export class Accounts extends React.Component {
         indicators: true
       },
       afterChange: (changes, source) => {
-        this.props.dispatch(
-          createAndUpdateAccounts(changes, source).bind(this)
-        );
+        if (changes && source !== 'loadData') {
+          const hotTable = this.refs.hot.hotInstance;
+          this.props.dispatch(
+            createAndUpdateAccounts(changes, source, hotTable)
+          );
+        }
       },
       beforeRemoveRow: (index, amount) => {
         this.props.dispatch(deleteAccounts(index, amount).bind(this));

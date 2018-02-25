@@ -25,11 +25,10 @@ export function getContacts(dispatch) {
     });
 }
 
-export function createAndUpdateContacts(changes, source) {
+export function createAndUpdateContacts(changes, source, hotTable) {
   return function(dispatch) {
-    const getNewAndUpdatedRowsBound = getNewAndUpdatedRows.bind(this);
-    const newAndUpdatedRows = getNewAndUpdatedRowsBound(changes, source);
-    console.log(changes);
+    const newAndUpdatedRows = getNewAndUpdatedRows(changes, source, hotTable);
+
     if (newAndUpdatedRows) {
       const newRows = newAndUpdatedRows.newRows;
       const updatedRows = newAndUpdatedRows.updatedRows;

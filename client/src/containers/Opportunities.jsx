@@ -106,9 +106,12 @@ class Opportunities extends React.Component {
         indicators: true
       },
       afterChange: (changes, source) => {
-        this.props.dispatch(
-          createAndUpdateOpportunities(changes, source).bind(this)
-        );
+        if (changes && source !== 'loadData') {
+          const hotTable = this.refs.hot.hotInstance;
+          this.props.dispatch(
+            createAndUpdateOpportunities(changes, source, hotTable)
+          );
+        }
       },
       beforeRemoveRow: (index, amount) => {
         this.props.dispatch(deleteOpportunities(index, amount).bind(this));

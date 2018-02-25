@@ -136,10 +136,11 @@ export class Contacts extends React.Component {
         }
       },
       afterChange: (changes, source, index, amount) => {
-        if (changes) {
+        if (changes && source !== 'loadData') {
+          const hotTable = this.refs.hot.hotInstance;
           if (changes[0][1] != 'name') {
             this.props.dispatch(
-              createAndUpdateContacts(changes, source).bind(this)
+              createAndUpdateContacts(changes, source, hotTable)
             );
           }
           const opportunityIDsNames = this.props.opportunityIDsNames;
