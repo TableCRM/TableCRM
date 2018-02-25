@@ -10,13 +10,14 @@ const opportunities = require('./db/opportunities');
 const leads = require('./db/leads');
 const accounts = require('./db/accounts');
 const dashboard = require('./db/dashboard');
+/* * * Path * * */
+const path = require('path');
 
 const app = express();
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * *
   Middleware
 * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
 app.use(cors());
 app.options('*', cors());
 app.use(bodyParser.json());
@@ -78,6 +79,14 @@ app.get(
   '/api/dashboard/totaloppvalueperstage',
   dashboard.getTotalOppValuePerStage
 );
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * *
+  static
+* * * * * * * * * * * * * * * * * * * * * * * * * * */
+app.use(express.static(path.join(__dirname, '../client/dist')));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+});
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * *
   Server
