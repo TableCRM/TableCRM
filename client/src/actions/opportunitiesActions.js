@@ -111,6 +111,32 @@ export function getCopiedOpportunities(opportunityIDs) {
   };
 }
 
+function relateOppToContact(changes, opportunityIDs, opportunityIDsNames) {
+  return function(dispatch) {
+    if (changes) {
+      // if changing multiple rows
+      if (changes.length > 1) {
+        const bound = buildObjToAssignOpportunityToContact.bind(this);
+        const data = bound(changes, opportunityIDs, opportunityIDsNames);
+        axios.post('/api/opportunity/contact', data);
+      } else {
+        // if changing one row
+        if (opportunityIDs) {
+          const oppID = opportunityIDs[0];
+          const rowIndex = changes[0][0];
+          const contactID = this.refs.hot.hotInstance.getSourceDataAtRow(
+            rowIndex
+          ).id;
+          axios.post('/api/opportunity/contact', {
+            oppID,
+            contactID
+          });
+        }
+      }
+    }
+  };
+}
+
 export function handleRelateOppsToContacts(
   changes,
   opportunityIDs,
@@ -140,35 +166,6 @@ export function handleRelateOppToContact(changes, opportunityIDsNames) {
       this.props.dispatch(
         relateOppToContact(changes, oppIDs, opportunityIDsNames).bind(this)
       );
-    }
-  };
-}
-export function relateOppToContact(
-  changes,
-  opportunityIDs,
-  opportunityIDsNames
-) {
-  return function(dispatch) {
-    if (changes) {
-      // if changing multiple rows
-      if (changes.length > 1) {
-        const bound = buildObjToAssignOpportunityToContact.bind(this);
-        const data = bound(changes, opportunityIDs, opportunityIDsNames);
-        axios.post('/api/opportunity/contact', data);
-      } else {
-        // if changing one row
-        if (opportunityIDs) {
-          const oppID = opportunityIDs[0];
-          const rowIndex = changes[0][0];
-          const contactID = this.refs.hot.hotInstance.getSourceDataAtRow(
-            rowIndex
-          ).id;
-          axios.post('/api/opportunity/contact', {
-            oppID,
-            contactID
-          });
-        }
-      }
     }
   };
 }

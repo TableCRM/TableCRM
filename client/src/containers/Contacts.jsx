@@ -17,7 +17,6 @@ import {
 } from '../actions/contactsActions';
 import {
   getAllOpportunityIDsNames,
-  relateOppToContact,
   handleRelateOppToContact,
   handleRelateOppsToContacts,
   getCopiedOpportunities
