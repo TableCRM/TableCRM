@@ -182,16 +182,12 @@ export const commonTableSetting = {
   fixedRowsBottom: 0
 };
 
-export function buildObjToAssignOpportunityToContact(
-  changes,
-  opportunityIDs,
-  opportunityIDsNames
-) {
+export function buildObjToAssignOpportunityToContact(changes, opportunityIDs, opportunityIDsNames, hotTable) {
   // build object to store OppIDs and contactIDs
   const contactIDs = [];
   for (const change of changes) {
     const rowIndex = change[0];
-    const contactID = this.refs.hot.hotInstance.getSourceDataAtRow(rowIndex).id;
+    const contactID = hotTable.getSourceDataAtRow(rowIndex).id;
     contactIDs.push(contactID);
   }
   if (!opportunityIDs) {

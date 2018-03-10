@@ -111,22 +111,19 @@ export function getCopiedOpportunities(opportunityIDs) {
   };
 }
 
-function relateOppToContact(changes, opportunityIDs, opportunityIDsNames) {
+function relateOppToContact(changes, opportunityIDs, opportunityIDsNames, hotTable) {
   return function(dispatch) {
     if (changes) {
       // if changing multiple rows
       if (changes.length > 1) {
-        const bound = buildObjToAssignOpportunityToContact.bind(this);
-        const data = bound(changes, opportunityIDs, opportunityIDsNames);
+        const data = buildObjToAssignOpportunityToContact(changes, opportunityIDs, opportunityIDsNames, hotTable);
         axios.post('/api/opportunity/contact', data);
       } else {
         // if changing one row
         if (opportunityIDs) {
           const oppID = opportunityIDs[0];
           const rowIndex = changes[0][0];
-          const contactID = this.refs.hot.hotInstance.getSourceDataAtRow(
-            rowIndex
-          ).id;
+          const contactID = hotTable.getSourceDataAtRow(rowIndex).id;
           axios.post('/api/opportunity/contact', {
             oppID,
             contactID
@@ -137,21 +134,7 @@ function relateOppToContact(changes, opportunityIDs, opportunityIDsNames) {
   };
 }
 
-export function handleRelateOppsToContacts(
-  changes,
-  opportunityIDs,
-  opportunityIDsNames
-) {
-  return function(dispatch) {
-    this.props.dispatch(
-      relateOppToContact(changes, opportunityIDs, opportunityIDsNames).bind(
-        this
-      )
-    );
-  };
-}
-
-export function handleRelateOppToContact(changes, opportunityIDsNames) {
+export function handleRelateOppToContact(changes, opportunityIDsNames, hotTable) {
   return function(dispatch) {
     // handle dropdown select and assign to a single contact
     const selectedOpportunityName = changes[0][3];
@@ -160,13 +143,21 @@ export function handleRelateOppToContact(changes, opportunityIDsNames) {
       .map(({ id }) => id);
     if (
       changes[0][1] === 'name' &&
-			(opportunityIDsNames.find(o => o.name === selectedOpportunityName) ||
-				selectedOpportunityName === '')
+      (opportunityIDsNames.find(o => o.name === selectedOpportunityName) ||
+        selectedOpportunityName === '')
     ) {
-      this.props.dispatch(
-        relateOppToContact(changes, oppIDs, opportunityIDsNames).bind(this)
+      dispatch(
+        relateOppToContact(changes, oppIDs, opportunityIDsNames, hotTable)
       );
     }
+  };
+}
+
+export function handleRelateOppsToContacts(changes, opportunityIDs,opportunityIDsNames, hotTable) {
+  return function(dispatch) {
+    dispatch(
+      relateOppToContact(changes, opportunityIDs, opportunityIDsNames, hotTable)
+    );
   };
 }
 
