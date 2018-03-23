@@ -33,10 +33,9 @@ export function getAllLeads(dispatch) {
     });
 }
 
-export function createAndUpdateLeads(changes, source) {
+export function createAndUpdateLeads(changes, source, hotTable) {
   return function(dispatch) {
-    const getNewAndUpdatedRowsBound = getNewAndUpdatedRows.bind(this);
-    const newAndUpdatedRows = getNewAndUpdatedRowsBound(changes, source);
+    const newAndUpdatedRows = getNewAndUpdatedRows(changes, source, hotTable);
 
     if (newAndUpdatedRows) {
       const newRows = newAndUpdatedRows.newRows;
@@ -55,17 +54,13 @@ export function createAndUpdateLeads(changes, source) {
   };
 }
 
-export function deleteLeads(index, amount) {
+export function deleteLeads(index, amount, hotTable) {
   return function(dispatch) {
-    const selectedRows = this.refs.hot.hotInstance.getSelected();
-    const getRemovedIdsBound = getRemovedIds.bind(this);
-    const removedIds = getRemovedIdsBound(selectedRows);
+    const removedIds = getRemovedIds(index, amount, hotTable);
     axios({
       method: 'DELETE',
       url: '/api/leads',
-      data: {
-        removedIds
-      }
+      data: { removedIds }
     });
   };
 }
@@ -123,13 +118,14 @@ export function updateColumnOrderOfLeads(columns, target) {
   };
 }
 
-export function updateHiddenColumnsOfLeads(context) {
+export function updateHiddenColumnsOfLeads(context, hotTable) {
   return function(dispatch) {
-    const getHiddenColsBound = getHiddenColsFromContext.bind(this);
-    const hiddenColumns = getHiddenColsBound(context);
-    axios.put('/api/leads/columns/hidden', { hiddenColumns }).then(() => {
-      dispatch(getColumnsOfLeads.bind(this));
-    });
+    const hiddenColumns = getHiddenColsFromContext(context, hotTable);
+
+    axios.put('/api/leads/columns/hidden', { hiddenColumns })
+      .then(() => {
+        dispatch(getColumnsOfLeads.bind(this));
+      });
   };
 }
 

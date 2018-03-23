@@ -17,7 +17,6 @@ import {
 } from '../actions/contactsActions';
 import {
   getAllOpportunityIDsNames,
-  relateOppToContact,
   handleRelateOppToContact,
   handleRelateOppsToContacts,
   getCopiedOpportunities
@@ -107,7 +106,8 @@ export class Contacts extends React.Component {
         indicators: true
       },
       beforeRemoveRow: (index, amount) => {
-        this.props.dispatch(deleteContacts(index, amount).bind(this));
+        const hotTable = this.refs.hot.hotInstance;
+        this.props.dispatch(deleteContacts(index, amount, hotTable));
       },
       afterInit: () => {
         this.props.dispatch(updateSource.bind(this));
@@ -118,7 +118,8 @@ export class Contacts extends React.Component {
         );
       },
       afterContextMenuHide: context => {
-        this.props.dispatch(updateHiddenColumnsOfContacts(context).bind(this));
+        const hotTable = this.refs.hot.hotInstance;
+        this.props.dispatch(updateHiddenColumnsOfContacts(context, hotTable));
       },
       beforeCopy: (data, coords) => {
         const oppNames = this.props.opportunityIDsNames.map(opp => opp.name);
@@ -136,28 +137,28 @@ export class Contacts extends React.Component {
         }
       },
       afterChange: (changes, source, index, amount) => {
-        if (changes) {
+        if (changes && source !== 'loadData') {
+          const hotTable = this.refs.hot.hotInstance;
           if (changes[0][1] != 'name') {
             this.props.dispatch(
-              createAndUpdateContacts(changes, source).bind(this)
+              createAndUpdateContacts(changes, source, hotTable)
             );
           }
+
           const opportunityIDsNames = this.props.opportunityIDsNames;
           if (source == 'edit' || source == 'Autofill.fill') {
+            const hotTable = this.refs.hot.hotInstance;
             this.props.dispatch(
-              handleRelateOppToContact(changes, opportunityIDsNames).bind(this)
+              handleRelateOppToContact(changes, opportunityIDsNames, hotTable)
             );
           }
           if (source == 'CopyPaste.paste' || source == 'Autofill.fill') {
+            const hotTable = this.refs.hot.hotInstance;
             const oppotunityIDs = this.props.copiedOpportunities;
             if (this.props.copiedOpportunities) {
               const opportunityIDs = this.props.copiedOpportunities;
               this.props.dispatch(
-                handleRelateOppsToContacts(
-                  changes,
-                  opportunityIDs,
-                  opportunityIDsNames
-                ).bind(this)
+                handleRelateOppsToContacts(changes, opportunityIDs,opportunityIDsNames, hotTable)
               );
             } else {
               const opportunityIDs = [];
@@ -169,11 +170,7 @@ export class Contacts extends React.Component {
                 opportunityIDs.push(opportunityID[0]);
               }
               this.props.dispatch(
-                handleRelateOppsToContacts(
-                  changes,
-                  opportunityIDs,
-                  opportunityIDsNames
-                ).bind(this)
+                handleRelateOppsToContacts(changes, opportunityIDs,opportunityIDsNames, hotTable)
               );
             }
           }

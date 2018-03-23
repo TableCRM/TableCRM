@@ -1,68 +1,65 @@
 import moment from 'moment';
 
-export function getNewAndUpdatedRows(changes, source) {
-  // if changes array is not null
-  if (changes && source !== 'loadData') {
-    // create empty objects to track new rows and updated rows
-    const newRowsObj = {};
-    const updatedRowsObj = {};
+export function getNewAndUpdatedRows(changes, source, hotTable) {
+  // create empty objects to track new rows and updated rows
+  const newRowsObj = {};
+  const updatedRowsObj = {};
 
-    // for each change array in changes array
-    for (const change of changes) {
-      const rowIndex = change[0]; // per spreadsheet
-      const rowId = this.refs.hot.hotInstance.getDataAtRow(rowIndex)[0]; // per database
-      const field = change[1];
-      let newValue = change[3];
-      const colIndex = this.refs.hot.hotInstance.propToCol(field);
-      const cell = this.refs.hot.hotInstance.getCell(rowIndex, colIndex);
+  // for each change array in changes array
+  for (const change of changes) {
+    const rowIndex = change[0]; // per spreadsheet
+    const rowId = hotTable.getDataAtRow(rowIndex)[0]; // per database
+    const field = change[1];
+    let newValue = change[3];
+    const colIndex = hotTable.propToCol(field);
+    const cell = hotTable.getCell(rowIndex, colIndex);
 
-      // if change is of valid data type
-      if (
-        cell === null ||
-				cell === undefined ||
-				!cell.classList.value.split(' ').includes('htInvalid')
-      ) {
-        // format date for persisting in database
-        if (field === 'expectedCloseDate' || field === 'closeDate') {
-          newValue = moment(newValue).format('YYYY-MM-DD');
-        }
-        // if change's corresponding row was empty prior to change
-        if (rowId === null) {
-          // if row index is not already a key in track object
-          if (!newRowsObj[rowIndex]) {
-            // add key-value pair to track object
-            const newRow = {};
-            newRow[field] = newValue;
-            newRowsObj[rowIndex] = newRow;
-            // otherwise
-          } else {
-            // get key's value and add field-newValue pair to the value
-            const newRow = newRowsObj[rowIndex];
-            newRow[field] = newValue;
-          }
-          // otherwise, if change's corresponding row was not empty prior to change
+    // if change is of valid data type
+    if (
+      cell === null ||
+			cell === undefined ||
+			!cell.classList.value.split(' ').includes('htInvalid')
+    ) {
+      // format date for persisting in database
+      if (field === 'expectedCloseDate' || field === 'closeDate') {
+        newValue = moment(newValue).format('YYYY-MM-DD');
+      }
+      // if change's corresponding row was empty prior to change
+      if (rowId === null) {
+        // if row index is not already a key in track object
+        if (!newRowsObj[rowIndex]) {
+          // add key-value pair to track object
+          const newRow = {};
+          newRow[field] = newValue;
+          newRowsObj[rowIndex] = newRow;
+          // otherwise
         } else {
-          // similar to above
-          if (!updatedRowsObj[rowId]) {
-            const updatedRow = { id: rowId };
-            updatedRow[field] = newValue;
-            updatedRowsObj[rowId] = updatedRow;
-          } else {
-            const updatedRow = updatedRowsObj[rowId];
-            updatedRow[field] = newValue;
-          }
+          // get key's value and add field-newValue pair to the value
+          const newRow = newRowsObj[rowIndex];
+          newRow[field] = newValue;
+        }
+        // otherwise, if change's corresponding row was not empty prior to change
+      } else {
+        // similar to above
+        if (!updatedRowsObj[rowId]) {
+          const updatedRow = { id: rowId };
+          updatedRow[field] = newValue;
+          updatedRowsObj[rowId] = updatedRow;
+        } else {
+          const updatedRow = updatedRowsObj[rowId];
+          updatedRow[field] = newValue;
         }
       }
     }
-
-    const newRows = Object.values(newRowsObj);
-    const updatedRows = Object.values(updatedRowsObj);
-    return { newRows, updatedRows };
   }
+
+  const newRows = Object.values(newRowsObj);
+  const updatedRows = Object.values(updatedRowsObj);
+  return { newRows, updatedRows };
 }
 
-export function getRemovedIds() {
-  const selectedRows = this.refs.hot.hotInstance.getSelected();
+export function getRemovedIds(index, amount, hotTable) {
+  const selectedRows = hotTable.getSelected();
   const startRow = selectedRows[0];
   const endRow = selectedRows[2];
   // get smallest and biggest row id's
@@ -71,7 +68,7 @@ export function getRemovedIds() {
   // get list of deleted row id's
   const removedIds = [];
   for (let i = smallestRowIndex; i <= biggestRowIndex; i++) {
-    removedIds.push(this.refs.hot.hotInstance.getDataAtRow(i)[0]);
+    removedIds.push(hotTable.getDataAtRow(i)[0]);
   }
   return removedIds;
 }
@@ -160,11 +157,11 @@ export function getHiddenColsFromResponse(response) {
   return hiddenColumnsIndexes;
 }
 
-export function getHiddenColsFromContext(context) {
+export function getHiddenColsFromContext(context, hotTable) {
   const hiddenColIndices = context.hot.getPlugin('hiddenColumns').hiddenColumns;
   const hiddenColProps = [];
   for (const hiddenColIndex of hiddenColIndices) {
-    const hiddenColProp = this.refs.hot.hotInstance.colToProp(hiddenColIndex);
+    const hiddenColProp = hotTable.colToProp(hiddenColIndex);
     hiddenColProps.push(hiddenColProp);
   }
   return hiddenColProps;
@@ -185,16 +182,12 @@ export const commonTableSetting = {
   fixedRowsBottom: 0
 };
 
-export function buildObjToAssignOpportunityToContact(
-  changes,
-  opportunityIDs,
-  opportunityIDsNames
-) {
+export function buildObjToAssignOpportunityToContact(changes, opportunityIDs, opportunityIDsNames, hotTable) {
   // build object to store OppIDs and contactIDs
   const contactIDs = [];
   for (const change of changes) {
     const rowIndex = change[0];
-    const contactID = this.refs.hot.hotInstance.getSourceDataAtRow(rowIndex).id;
+    const contactID = hotTable.getSourceDataAtRow(rowIndex).id;
     contactIDs.push(contactID);
   }
   if (!opportunityIDs) {

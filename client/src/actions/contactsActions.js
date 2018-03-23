@@ -25,11 +25,10 @@ export function getContacts(dispatch) {
     });
 }
 
-export function createAndUpdateContacts(changes, source) {
+export function createAndUpdateContacts(changes, source, hotTable) {
   return function(dispatch) {
-    const getNewAndUpdatedRowsBound = getNewAndUpdatedRows.bind(this);
-    const newAndUpdatedRows = getNewAndUpdatedRowsBound(changes, source);
-    console.log(changes);
+    const newAndUpdatedRows = getNewAndUpdatedRows(changes, source, hotTable);
+
     if (newAndUpdatedRows) {
       const newRows = newAndUpdatedRows.newRows;
       const updatedRows = newAndUpdatedRows.updatedRows;
@@ -47,17 +46,13 @@ export function createAndUpdateContacts(changes, source) {
   };
 }
 
-export function deleteContacts(index, amount) {
+export function deleteContacts(index, amount, hotTable) {
   return function(dispatch) {
-    // get deleted row ID(s)
-    const getRemovedIdsBound = getRemovedIds.bind(this);
-    const removedIds = getRemovedIdsBound();
+    const removedIds = getRemovedIds(index, amount, hotTable);
     axios({
       method: 'DELETE',
       url: '/api/contacts',
-      data: {
-        removedIds
-      }
+      data: { removedIds }
     });
   };
 }
@@ -125,13 +120,14 @@ export function updateColumnOrderOfContacts(columns, target) {
   };
 }
 
-export function updateHiddenColumnsOfContacts(context) {
+export function updateHiddenColumnsOfContacts(context, hotTable) {
   return function(dispatch) {
-    const getHiddenColsBound = getHiddenColsFromContext.bind(this);
-    const hiddenColumns = getHiddenColsBound(context);
-    axios.put('/api/contacts/columns/hidden', { hiddenColumns }).then(() => {
-      dispatch(getColumnsOfContacts.bind(this));
-    });
+    const hiddenColumns = getHiddenColsFromContext(context, hotTable);
+
+    axios.put('/api/contacts/columns/hidden', { hiddenColumns })
+      .then(() => {
+        dispatch(getColumnsOfContacts.bind(this));
+      });
   };
 }
 

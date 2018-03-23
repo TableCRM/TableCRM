@@ -72,12 +72,16 @@ export class Accounts extends React.Component {
         indicators: true
       },
       afterChange: (changes, source) => {
-        this.props.dispatch(
-          createAndUpdateAccounts(changes, source).bind(this)
-        );
+        if (changes && source !== 'loadData') {
+          const hotTable = this.refs.hot.hotInstance;
+          this.props.dispatch(
+            createAndUpdateAccounts(changes, source, hotTable)
+          );
+        }
       },
       beforeRemoveRow: (index, amount) => {
-        this.props.dispatch(deleteAccounts(index, amount).bind(this));
+        const hotTable = this.refs.hot.hotInstance;
+        this.props.dispatch(deleteAccounts(index, amount, hotTable));
       },
       afterColumnMove: (columns, target) => {
         this.props.dispatch(
@@ -85,7 +89,8 @@ export class Accounts extends React.Component {
         );
       },
       afterContextMenuHide: context => {
-        // this.props.dispatch(updateHiddenColumnsOfAccounts(context).bind(this));
+        const hotTable = this.refs.hot.hotInstance;
+        this.props.dispatch(updateHiddenColumnsOfAccounts(context, hotTable));
       },
       afterOnCellMouseOver: (event, coords, td) => {
         this.props.dispatch(

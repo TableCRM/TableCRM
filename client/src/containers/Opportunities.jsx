@@ -106,12 +106,16 @@ class Opportunities extends React.Component {
         indicators: true
       },
       afterChange: (changes, source) => {
-        this.props.dispatch(
-          createAndUpdateOpportunities(changes, source).bind(this)
-        );
+        if (changes && source !== 'loadData') {
+          const hotTable = this.refs.hot.hotInstance;
+          this.props.dispatch(
+            createAndUpdateOpportunities(changes, source, hotTable)
+          );
+        }
       },
       beforeRemoveRow: (index, amount) => {
-        this.props.dispatch(deleteOpportunities(index, amount).bind(this));
+        const hotTable = this.refs.hot.hotInstance;
+        this.props.dispatch(deleteOpportunities(index, amount, hotTable));
       },
       afterColumnMove: (columns, target) => {
         this.props.dispatch(
@@ -119,9 +123,8 @@ class Opportunities extends React.Component {
         );
       },
       afterContextMenuHide: context => {
-        this.props.dispatch(
-          updateHiddenColumnsOfOpportunities(context).bind(this)
-        );
+        const hotTable = this.refs.hot.hotInstance;
+        this.props.dispatch(updateHiddenColumnsOfOpportunities(context, hotTable));
       },
       afterOnCellMouseOver: (event, coords, td) => {
         this.props.dispatch(
