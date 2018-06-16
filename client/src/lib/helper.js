@@ -1,7 +1,7 @@
 import moment from 'moment';
 
 export function getNewAndUpdatedRows(changes, source, hotTable) {
-  // create empty objects to track new rows and updated rows
+  // create empty hash tables to track new rows and updated rows
   const newRowsObj = {};
   const updatedRowsObj = {};
 
@@ -24,11 +24,11 @@ export function getNewAndUpdatedRows(changes, source, hotTable) {
       if (field === 'expectedCloseDate' || field === 'closeDate') {
         newValue = moment(newValue).format('YYYY-MM-DD');
       }
-      // if change's corresponding row was empty prior to change
+      // if change is adding a new row
       if (rowId === null) {
-        // if row index is not already a key in track object
+        // if row index is not already a key in hash table
         if (!newRowsObj[rowIndex]) {
-          // add key-value pair to track object
+          // add key-value pair to hash table
           const newRow = {};
           newRow[field] = newValue;
           newRowsObj[rowIndex] = newRow;
@@ -38,7 +38,7 @@ export function getNewAndUpdatedRows(changes, source, hotTable) {
           const newRow = newRowsObj[rowIndex];
           newRow[field] = newValue;
         }
-        // otherwise, if change's corresponding row was not empty prior to change
+      // otherwise, if change is updating an existing row
       } else {
         // similar to above
         if (!updatedRowsObj[rowId]) {
